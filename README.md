@@ -2,6 +2,11 @@
 
 This project demonstrates a complete Flask web application integrated with Keycloak for OpenID Connect (OIDC) authentication. It showcases secure user login, profile management, token handling, and federated logout using a fully containerized environment with Docker Compose.
 
+<img width="558" height="427" alt="immagine" src="https://github.com/user-attachments/assets/6fe45885-e644-44c6-9347-49d7e65600c6" />
+
+<img width="558" height="894" alt="immagine" src="https://github.com/user-attachments/assets/61cf8e3e-5d61-423a-a8a0-3e718a21cf96" />
+
+
 ## 🚀 Features
 
 - **🔐 Secure Authentication**: Implements OAuth 2.0 Authorization Code Flow with PKCE via Keycloak
