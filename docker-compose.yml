@@ -29,6 +29,15 @@ services:
     networks:
       - keycloak-network
 
+  resource_server:
+    build: ./resource_server
+    ports:
+      - "5001:5001"
+    depends_on:
+      - keycloak
+    networks:
+      - keycloak-network
+
 networks:
   keycloak-network:
     driver: bridge

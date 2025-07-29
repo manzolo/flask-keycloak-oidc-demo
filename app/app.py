@@ -15,6 +15,7 @@ AUTH_SERVER_INTERNAL = os.environ.get('AUTH_SERVER_INTERNAL')
 AUTH_SERVER_PUBLIC = os.environ.get('AUTH_SERVER_PUBLIC')
 REDIRECT_URI = 'http://localhost:5000/callback'
 POST_LOGOUT_REDIRECT_URI = 'http://localhost:5000/' 
+RESOURCE_SERVER_INTERNAL_URL = 'http://resource_server:5001' 
 
 app = Flask(__name__)
 app.secret_key = 'supersecret' # Use a strong, random key in production!
@@ -230,5 +231,38 @@ def profile():
     """Displays user profile information."""
     return render_template('profile.html', user=session.get('user'), info=session.get('userinfo'))
 
+@app.route('/call-protected-api')
+@login_required
+def call_protected_api():
+    """
+    Makes a call to the protected resource server using the access token.
+    """
+    access_token = session.get('access_token')
+    if not access_token:
+        return "Access token not found in session. Please log in.", 401
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    try:
+        response = requests.get(f"{RESOURCE_SERVER_INTERNAL_URL}/protected-resource", headers=headers, timeout=10)
+        response.raise_for_status() # Raise an exception for HTTP errors (4xx or 5xx)
+        
+        api_response_data = response.json()
+        return render_template('api_response.html', api_response=api_response_data)
+
+    except requests.exceptions.RequestException as e:
+        error_message = f"Error calling protected API: {e}"
+        if hasattr(e, 'response') and e.response is not None:
+            error_message += f" - Status: {e.response.status_code}, Response: {e.response.text}"
+        print(error_message)
+        return f"Failed to call protected API: {error_message}", 500
+    except json.JSONDecodeError as e:
+        print(f"JSON decode error from API response: {e}")
+        return f"Error decoding API response: {e}", 500
+    
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+
